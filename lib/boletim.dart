@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 double widgetx = .45;
 double widgety = -.013;
@@ -28,105 +29,121 @@ List<int> valoresBoletim = [
   0,
 ];
 
-class BoletimWidget extends StatefulWidget {
-  const BoletimWidget({
-    Key? key,
-    required this.dataBoletim,
-    required this.confirmados,
-    required this.isolamentoDomiciliar,
-    required this.aguardandoResultado,
-    required this.internados,
-    required this.recuperados,
-    required this.obitos,
-  }) : super(key: key);
+class ValoresBoletim extends ChangeNotifier {
+  DateTime dataBoletim_ = DateTime.now();
+  String dataString_ = 'CLIQUE PADA ALTERAR A DATA';
+  int confirmados_ = 0;
+  int isolamentoDomiciliar_ = 0;
+  int aguardandoResultado_ = 0;
+  int internados_ = 0;
+  int recuperados_ = 0;
+  int obitos_ = 0;
 
-  final String dataBoletim;
-  final int confirmados;
-  final int isolamentoDomiciliar;
+  void setValues(
+      {DateTime? data,
+      String? dataString,
+      int? confirmados,
+      int? isolamentoDomiciliar,
+      int? aguardandoResultados,
+      int? internados,
+      int? recuperados,
+      int? obitos}) {
+    if (confirmados != null) {
+      confirmados_ = confirmados;
+    }
+    if (isolamentoDomiciliar != null) {
+      isolamentoDomiciliar_ = isolamentoDomiciliar;
+    }
+    if (aguardandoResultados != null) {
+      aguardandoResultado_ = aguardandoResultados;
+    }
+    if (internados != null) {
+      internados_ = internados;
+    }
+    if (recuperados != null) {
+      recuperados_ = recuperados;
+    }
+    if (obitos != null) {
+      obitos_ = obitos;
+    }
+    if (dataString != null) {
+      dataString_ = dataString;
+    }
 
-  final int aguardandoResultado;
-  final int internados;
-  final int recuperados;
-  final int obitos;
-  @override
-  State<BoletimWidget> createState() => _BoletimWidgetState();
-}
-
-Future<String> _selectDate(BuildContext context) async {
-  final DateTime? picked = await showDatePicker(
-      //locale: const Locale('pt', 'BR'),
-      context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime(2012, 8),
-      lastDate: DateTime(2101));
-  if (picked != null && picked != selectedDate) {
-    return dataBoletim =
-        '${picked.day.toString().padLeft(2, '0')} DE ${DateFormat('MMMM', 'pt-BR').format(picked)} de ${picked.year}'
-            .toUpperCase();
-  } else {
-    return '';
+    notifyListeners();
   }
 }
 
-class _BoletimWidgetState extends State<BoletimWidget> {
-  popupItens(String texto, String valor) {
-    TextEditingController cont = TextEditingController();
-    return BackdropFilter(
-      filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
-      child: AlertDialog(
-        backgroundColor: const Color.fromARGB(150, 255, 255, 255),
-        title: Center(child: Text(texto)),
-        content: TextFormField(
-          decoration: const InputDecoration(
-              filled: true,
-              fillColor: Color.fromARGB(100, 255, 255, 255),
-              border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(15)))),
-          autofocus: true,
-          controller: cont,
-          keyboardType: TextInputType.number,
-          onChanged: (v) {
-            print(v);
-          },
-          onFieldSubmitted: (value) {
-            if (cont.text != '') {
-              valoresBoletimMap[valor] = int.parse(cont.text);
-            }
-            Navigator.pop(context);
-          },
-        ),
-        actions: [
-          Center(
-            child: ElevatedButton(
-                onPressed: () {
-                  if (cont.text != '') {
-                    valoresBoletimMap[valor] = int.parse(cont.text);
-                  }
-                  setState(() {});
-                  Navigator.pop(context);
-                },
-                child: const Text('OK')),
-          )
-        ],
-      ),
-    );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    valoresBoletimMap = {
-      'confirmados': widget.confirmados,
-      'isolamentoDomiciliar': widget.isolamentoDomiciliar,
-      'aguardandoResultado': widget.aguardandoResultado,
-      'internados': widget.internados,
-      'recuperados': widget.recuperados,
-      'obitos': widget.obitos,
-    };
-  }
+class Boletim extends StatelessWidget {
+  const Boletim({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    Widget texto(String text, double size) {
+      return Text(
+        text,
+        textAlign: TextAlign.center,
+        textScaleFactor: size,
+        style: const TextStyle(
+          fontFamily: 'Nexa',
+          color: Color.fromARGB(255, 20, 20, 20),
+          fontWeight: FontWeight.w900,
+        ),
+      );
+    }
+
+    popupItens(String texto, String valor) {
+      switch (valor) {
+        case 'confirmados':
+          // do something
+          break;
+        case 'isolamentoDomiciliar':
+          // do something else
+          break;
+      }
+
+      TextEditingController cont = TextEditingController();
+      return BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+        child: AlertDialog(
+          backgroundColor: const Color.fromARGB(150, 255, 255, 255),
+          title: Center(child: Text(texto)),
+          content: TextFormField(
+            decoration: const InputDecoration(
+                filled: true,
+                fillColor: Color.fromARGB(100, 255, 255, 255),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(15)))),
+            autofocus: true,
+            controller: cont,
+            keyboardType: TextInputType.number,
+            onChanged: (v) {
+              print(v);
+            },
+            onFieldSubmitted: (value) {
+              if (cont.text != '') {
+                valoresBoletimMap[valor] = int.parse(cont.text);
+              }
+              Navigator.pop(context);
+            },
+          ),
+          actions: [
+            Center(
+              child: ElevatedButton(
+                  onPressed: () {
+                    if (cont.text != '') {
+                      valoresBoletimMap[valor] = int.parse(cont.text);
+                    }
+
+                    Navigator.pop(context);
+                  },
+                  child: const Text('OK')),
+            )
+          ],
+        ),
+      );
+    }
+
     return LayoutBuilder(builder: (context, constraints) {
       return AspectRatio(
         aspectRatio: 1 / 1,
@@ -145,22 +162,22 @@ class _BoletimWidgetState extends State<BoletimWidget> {
                   Center(
                     child: Align(
                         alignment: const Alignment(0, .72),
-                        child: InkWell(
-                          onTap: () async {
-                            dataBoletim = await _selectDate(context);
-                            setState(() {});
+                        child: InkWell(onTap: () async {
+                          _selectDate(context);
+                        }, child: Consumer<ValoresBoletim>(
+                          builder: (context, value, child) {
+                            return Text(
+                              value.dataString_,
+                              textAlign: TextAlign.center,
+                              textScaleFactor: constraints.maxWidth / 500,
+                              style: const TextStyle(
+                                fontFamily: 'Nexa',
+                                color: Color.fromARGB(255, 20, 20, 20),
+                                fontWeight: FontWeight.w900,
+                              ),
+                            );
                           },
-                          child: Text(
-                            dataBoletim,
-                            textAlign: TextAlign.center,
-                            textScaleFactor: constraints.maxWidth / 500,
-                            style: const TextStyle(
-                              fontFamily: 'Nexa',
-                              color: Color.fromARGB(255, 20, 20, 20),
-                              fontWeight: FontWeight.w900,
-                            ),
-                          ),
-                        )),
+                        ))),
                   ),
                   // Casos Confirmados
                   Align(
@@ -179,16 +196,11 @@ class _BoletimWidgetState extends State<BoletimWidget> {
                         alignment: Alignment.center,
                         width: constraints.maxHeight / 2.8,
                         height: constraints.maxHeight / 13,
-                        child: Text(
-                          widget.confirmados.toString(),
-                          textAlign: TextAlign.center,
-                          textScaleFactor: constraints.maxHeight / 200,
-                          style: const TextStyle(
-                            height: 1.35,
-                            fontFamily: 'Nexa',
-                            color: Color.fromARGB(255, 50, 50, 50),
-                            fontWeight: FontWeight.w800,
-                          ),
+                        child: Consumer<ValoresBoletim>(
+                          builder: (context, value, child) {
+                            return texto(value.confirmados_.toString(),
+                                constraints.maxWidth / 500);
+                          },
                         ),
                       ),
                     ),
@@ -209,16 +221,20 @@ class _BoletimWidgetState extends State<BoletimWidget> {
                         alignment: Alignment.center,
                         width: constraints.maxHeight / 5.5,
                         height: constraints.maxHeight / 15,
-                        child: Text(
-                          widget.isolamentoDomiciliar.toString(),
-                          textAlign: TextAlign.center,
-                          textScaleFactor: constraints.maxHeight / 350,
-                          style: const TextStyle(
-                            height: 1.8,
-                            fontFamily: 'Nexa',
-                            color: Colors.white,
-                            fontWeight: FontWeight.w900,
-                          ),
+                        child: Consumer<ValoresBoletim>(
+                          builder: (context, value, child) {
+                            return Text(
+                              value.isolamentoDomiciliar_.toString(),
+                              textAlign: TextAlign.center,
+                              textScaleFactor: constraints.maxHeight / 350,
+                              style: const TextStyle(
+                                height: 1.8,
+                                fontFamily: 'Nexa',
+                                color: Colors.white,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            );
+                          },
                         ),
                       ),
                     ),
@@ -240,16 +256,20 @@ class _BoletimWidgetState extends State<BoletimWidget> {
                         alignment: Alignment.center,
                         width: constraints.maxHeight / 5.5,
                         height: constraints.maxHeight / 15,
-                        child: Text(
-                          widget.aguardandoResultado.toString(),
-                          textAlign: TextAlign.center,
-                          textScaleFactor: constraints.maxHeight / 350,
-                          style: const TextStyle(
-                            height: 1.8,
-                            fontFamily: 'Nexa',
-                            color: Colors.white,
-                            fontWeight: FontWeight.w900,
-                          ),
+                        child: Consumer<ValoresBoletim>(
+                          builder: (context, value, child) {
+                            return Text(
+                              value.aguardandoResultado_.toString(),
+                              textAlign: TextAlign.center,
+                              textScaleFactor: constraints.maxHeight / 350,
+                              style: const TextStyle(
+                                height: 1.8,
+                                fontFamily: 'Nexa',
+                                color: Colors.white,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            );
+                          },
                         ),
                       ),
                     ),
@@ -270,16 +290,20 @@ class _BoletimWidgetState extends State<BoletimWidget> {
                         alignment: Alignment.center,
                         width: constraints.maxHeight / 5.5,
                         height: constraints.maxHeight / 15,
-                        child: Text(
-                          widget.internados.toString(),
-                          textAlign: TextAlign.center,
-                          textScaleFactor: constraints.maxHeight / 350,
-                          style: const TextStyle(
-                            height: 1.8,
-                            fontFamily: 'Nexa',
-                            color: Colors.white,
-                            fontWeight: FontWeight.w900,
-                          ),
+                        child: Consumer<ValoresBoletim>(
+                          builder: (context, value, child) {
+                            return Text(
+                              value.internados_.toString(),
+                              textAlign: TextAlign.center,
+                              textScaleFactor: constraints.maxHeight / 350,
+                              style: const TextStyle(
+                                height: 1.8,
+                                fontFamily: 'Nexa',
+                                color: Colors.white,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            );
+                          },
                         ),
                       ),
                     ),
@@ -301,16 +325,20 @@ class _BoletimWidgetState extends State<BoletimWidget> {
                         alignment: Alignment.center,
                         width: constraints.maxHeight / 5.5,
                         height: constraints.maxHeight / 15,
-                        child: Text(
-                          widget.recuperados.toString(),
-                          textAlign: TextAlign.center,
-                          textScaleFactor: constraints.maxHeight / 350,
-                          style: const TextStyle(
-                            height: 1.8,
-                            fontFamily: 'Nexa',
-                            color: Colors.white,
-                            fontWeight: FontWeight.w900,
-                          ),
+                        child: Consumer<ValoresBoletim>(
+                          builder: (context, value, child) {
+                            return Text(
+                              value.recuperados_.toString(),
+                              textAlign: TextAlign.center,
+                              textScaleFactor: constraints.maxHeight / 350,
+                              style: const TextStyle(
+                                height: 1.8,
+                                fontFamily: 'Nexa',
+                                color: Colors.white,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            );
+                          },
                         ),
                       ),
                     ),
@@ -331,16 +359,20 @@ class _BoletimWidgetState extends State<BoletimWidget> {
                         alignment: Alignment.center,
                         width: constraints.maxHeight / 5.5,
                         height: constraints.maxHeight / 15,
-                        child: Text(
-                          widget.obitos.toString(),
-                          textAlign: TextAlign.center,
-                          textScaleFactor: constraints.maxHeight / 350,
-                          style: const TextStyle(
-                            height: 1.8,
-                            fontFamily: 'Nexa',
-                            color: Colors.white,
-                            fontWeight: FontWeight.w900,
-                          ),
+                        child: Consumer<ValoresBoletim>(
+                          builder: (context, value, child) {
+                            return Text(
+                              value.obitos_.toString(),
+                              textAlign: TextAlign.center,
+                              textScaleFactor: constraints.maxHeight / 350,
+                              style: const TextStyle(
+                                height: 1.8,
+                                fontFamily: 'Nexa',
+                                color: Colors.white,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            );
+                          },
                         ),
                       ),
                     ),
@@ -353,4 +385,25 @@ class _BoletimWidgetState extends State<BoletimWidget> {
       );
     });
   }
+}
+
+_selectDate(BuildContext context) {
+  showDatePicker(
+          //locale: const Locale('pt', 'BR'),
+          context: context,
+          initialDate: selectedDate,
+          firstDate: DateTime(2012, 8),
+          lastDate: DateTime(2101))
+      .then((picked) {
+    if (picked != null) {
+      dataBoletim =
+          '${picked.day.toString().padLeft(2, '0')} DE ${DateFormat('MMMM', 'pt-BR').format(picked)} de ${picked.year}'
+              .toUpperCase();
+
+      print(dataBoletim);
+
+      Provider.of<ValoresBoletim>(context, listen: false)
+          .setValues(dataString: dataBoletim);
+    }
+  });
 }

@@ -1,10 +1,15 @@
+import 'package:boletim_campoverde/boletim.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:provider/provider.dart';
 
 import 'home_page.dart';
 
 main() async {
-  runApp(const MyApp());
+  runApp(ChangeNotifierProvider(
+    create: (context) => ValoresBoletim(),
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {

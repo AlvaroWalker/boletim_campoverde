@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 import 'boletim.dart';
@@ -77,6 +78,7 @@ class _HomePageState extends State<HomePage> {
               ElevatedButton(
                 child: const Text('Fechar'),
                 onPressed: () {
+                  setBoletimValues();
                   Navigator.of(context).pop();
                 },
               )
@@ -191,14 +193,23 @@ class _HomePageState extends State<HomePage> {
     _showResult(
         'Confirmados: $pdfConf\nAguardando Resultado: $pdfAguardando\nEm Isolamento: $pdfIsolados\nRecuperados: $pdfRecuperados\nInternados: $pdfInternados\nObitos: $pdfObitos');
 
-    setState(() {
-      valoresBoletim[0] = int.tryParse(pdfConf)!;
-      valoresBoletim[1] = int.tryParse(pdfIsolados)!;
-      valoresBoletim[2] = int.tryParse(pdfAguardando)!;
-      valoresBoletim[3] = int.tryParse(pdfInternados)!;
-      valoresBoletim[4] = int.tryParse(pdfRecuperados)!;
-      valoresBoletim[5] = int.tryParse(pdfObitos)!;
-    });
+    valoresBoletim[0] = int.tryParse(pdfConf)!;
+    valoresBoletim[1] = int.tryParse(pdfIsolados)!;
+    valoresBoletim[2] = int.tryParse(pdfAguardando)!;
+    valoresBoletim[3] = int.tryParse(pdfInternados)!;
+    valoresBoletim[4] = int.tryParse(pdfRecuperados)!;
+    valoresBoletim[5] = int.tryParse(pdfObitos)!;
+  }
+
+  void setBoletimValues() {
+    Provider.of<ValoresBoletim>(context, listen: false).setValues(
+      confirmados: valoresBoletim[0],
+      isolamentoDomiciliar: valoresBoletim[1],
+      aguardandoResultados: valoresBoletim[2],
+      internados: valoresBoletim[3],
+      recuperados: valoresBoletim[4],
+      obitos: valoresBoletim[5],
+    );
   }
 
   Widget telaTeste() {
@@ -240,15 +251,7 @@ class _HomePageState extends State<HomePage> {
                       child: RepaintBoundary(
                           key: boletimKey,
                           //controller: screenshotController,
-                          child: BoletimWidget(
-                            dataBoletim: dataBoletim,
-                            confirmados: valoresBoletim[0],
-                            isolamentoDomiciliar: valoresBoletim[1],
-                            aguardandoResultado: valoresBoletim[2],
-                            internados: valoresBoletim[3],
-                            recuperados: valoresBoletim[4],
-                            obitos: valoresBoletim[5],
-                          )),
+                          child: const Boletim()),
                     ),
                   ),
                 ),
