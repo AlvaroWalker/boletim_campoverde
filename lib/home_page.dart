@@ -1,24 +1,17 @@
-import 'dart:ui';
-
-import 'package:download/download.dart';
+import 'package:boletim_campoverde/to_image.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 import 'boletim.dart';
 
-double valorTela = 1;
-
 double widgetx = .45;
 double widgety = -.013;
 
 double widgetHeight = 50;
 double widgetWidth = 50;
-
-DateTime dataDoBoletim = DateTime.now();
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -116,26 +109,6 @@ class _HomePageState extends State<HomePage> {
   int txt1 = 0, txt2 = 0, txt3 = 0, txt4 = 0, txt5 = 0;
 
   @override
-  void initState() {
-    calculateSizeAndPosition();
-    super.initState();
-  }
-
-  void updateState() {
-    calculateSizeAndPosition();
-  }
-
-  void calculateSizeAndPosition() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {
-        size = boletimKey.currentContext!.size!;
-        //position = box.localToGlobal(Offset.zero);
-        //size = box.size;
-      });
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -162,32 +135,32 @@ class _HomePageState extends State<HomePage> {
 //Predefined bound.
 
     String pdfConf =
-        valorItemBoletim(result, const Rect.fromLTWH(56, 278, 138, 30));
+        valorItemBoletim(result, const Rect.fromLTWH(56, 278, 129, 30));
 
     //
 
     String pdfAguardando =
-        valorItemBoletim(result, const Rect.fromLTWH(383, 278, 127, 30));
+        valorItemBoletim(result, const Rect.fromLTWH(376, 276, 112, 30));
 
     //
 
     String pdfIsolados =
-        valorItemBoletim(result, const Rect.fromLTWH(170, 363, 80, 30));
+        valorItemBoletim(result, const Rect.fromLTWH(166, 360, 77, 30));
 
     //
 
     String pdfRecuperados =
-        valorItemBoletim(result, const Rect.fromLTWH(248, 242, 116, 30));
+        valorItemBoletim(result, const Rect.fromLTWH(243, 240, 114, 30));
 
     //
 
     String pdfInternados =
-        valorItemBoletim(result, const Rect.fromLTWH(285, 363, 79, 30));
+        valorItemBoletim(result, const Rect.fromLTWH(280, 360, 77, 30));
 
     //
 
     String pdfObitos =
-        valorItemBoletim(result, const Rect.fromLTWH(382, 346, 75, 28));
+        valorItemBoletim(result, const Rect.fromLTWH(395, 360, 75, 30));
 
 //Display the text.
     _showResult(
@@ -214,13 +187,11 @@ class _HomePageState extends State<HomePage> {
 
   Widget telaTeste() {
     return Row(
-      mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         Flexible(
           flex: 1,
           child: Row(
-            mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               const Spacer(
@@ -249,9 +220,7 @@ class _HomePageState extends State<HomePage> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(20),
                       child: RepaintBoundary(
-                          key: boletimKey,
-                          //controller: screenshotController,
-                          child: const Boletim()),
+                          key: boletimKey, child: const Boletim()),
                     ),
                   ),
                 ),
@@ -265,93 +234,71 @@ class _HomePageState extends State<HomePage> {
         Flexible(
           flex: 1,
           child: Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Container(
-                      decoration: const BoxDecoration(),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          const Spacer(flex: 7),
-                          ElevatedButton(
-                              style: ButtonStyle(
-                                  shape: MaterialStateProperty.all<
-                                          RoundedRectangleBorder>(
-                                      RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ))),
-                              onPressed: () {
-                                lerPDF();
-                              },
-                              child: const SizedBox(
-                                  height: 70,
-                                  width: 170,
-                                  child: Center(
-                                      child: Text(
-                                    'CARREGAR PDF\nCOM DADOS',
-                                    textAlign: TextAlign.center,
-                                  )))),
-                          const Spacer(),
-                          ElevatedButton(
-                              style: ButtonStyle(
-                                  shape: MaterialStateProperty.all<
-                                          RoundedRectangleBorder>(
-                                      RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ))),
-                              onPressed: () async {
-                                double w = 1080 /
-                                    boletimKey.currentContext!.size!.width;
-
-                                double pixelratio =
-                                    MediaQuery.of(context).devicePixelRatio;
-
-                                double pixelRatioFinal = w * pixelratio;
-
-                                paraimagem(boletimKey, pixelRatioFinal);
-
-                                //await salvarBoletim(pixelRatioFinal);
-                              },
-                              child: const SizedBox(
-                                  height: 70,
-                                  width: 170,
-                                  child: Center(
-                                      child: Text(
-                                    'BAIXAR\nBOLETIM',
-                                    textAlign: TextAlign.center,
-                                  )))),
-                          const Spacer(flex: 7),
-                        ],
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      style: ButtonStyle(
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
+                      ),
+                      onPressed: lerPDF,
+                      child: const SizedBox(
+                        height: 70,
+                        width: 170,
+                        child: Center(
+                          child: Text(
+                            'CARREGAR PDF\nCOM DADOS',
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    ElevatedButton(
+                      style: ButtonStyle(
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
+                      ),
+                      onPressed: () async {
+                        double w =
+                            1080 / boletimKey.currentContext!.size!.width;
+                        double pixelratio =
+                            MediaQuery.of(context).devicePixelRatio;
+                        double pixelRatioFinal = w * pixelratio;
+                        captureAndSaveImage(boletimKey, pixelRatioFinal);
+                      },
+                      child: const SizedBox(
+                        height: 70,
+                        width: 170,
+                        child: Center(
+                          child: Text(
+                            'BAIXAR\nBOLETIM',
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
         ),
       ],
     );
-  }
-
-  Future<void> paraimagem(dynamic key, double pixelRatioFinal) async {
-    final boundary =
-        key.currentContext?.findRenderObject() as RenderRepaintBoundary?;
-    final image = await boundary?.toImage(pixelRatio: pixelRatioFinal);
-    final byteData = await image?.toByteData(format: ImageByteFormat.png);
-    final imageBytes = byteData?.buffer.asUint8List();
-
-    if (imageBytes != null) {
-      final stream = Stream.fromIterable(imageBytes.toList());
-
-      download(stream, 'boletim $dataBoletim.jpg');
-    }
   }
 }

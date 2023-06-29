@@ -93,15 +93,6 @@ class Boletim extends StatelessWidget {
     }
 
     popupItens(String texto, String valor) {
-      switch (valor) {
-        case 'confirmados':
-          // do something
-          break;
-        case 'isolamentoDomiciliar':
-          // do something else
-          break;
-      }
-
       TextEditingController cont = TextEditingController();
       return BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
@@ -133,6 +124,48 @@ class Boletim extends StatelessWidget {
                   onPressed: () {
                     if (cont.text != '') {
                       valoresBoletimMap[valor] = int.parse(cont.text);
+                      switch (valor) {
+                        case 'confirmados':
+                          Provider.of<ValoresBoletim>(context, listen: false)
+                              .setValues(
+                            confirmados: int.parse(cont.text),
+                          );
+                          break;
+                        case 'isolamentoDomiciliar':
+                          Provider.of<ValoresBoletim>(context, listen: false)
+                              .setValues(
+                            isolamentoDomiciliar: int.parse(cont.text),
+                          );
+                          break;
+
+                        case 'aguardandoResultado':
+                          Provider.of<ValoresBoletim>(context, listen: false)
+                              .setValues(
+                            aguardandoResultados: int.parse(cont.text),
+                          );
+                          break;
+
+                        case 'internados':
+                          Provider.of<ValoresBoletim>(context, listen: false)
+                              .setValues(
+                            internados: int.parse(cont.text),
+                          );
+                          break;
+
+                        case 'recuperados':
+                          Provider.of<ValoresBoletim>(context, listen: false)
+                              .setValues(
+                            recuperados: int.parse(cont.text),
+                          );
+                          break;
+
+                        case 'obitos':
+                          Provider.of<ValoresBoletim>(context, listen: false)
+                              .setValues(
+                            obitos: int.parse(cont.text),
+                          );
+                          break;
+                      }
                     }
 
                     Navigator.pop(context);
@@ -199,7 +232,7 @@ class Boletim extends StatelessWidget {
                         child: Consumer<ValoresBoletim>(
                           builder: (context, value, child) {
                             return texto(value.confirmados_.toString(),
-                                constraints.maxWidth / 500);
+                                constraints.maxHeight / 200);
                           },
                         ),
                       ),
@@ -213,7 +246,8 @@ class Boletim extends StatelessWidget {
                         await showDialog(
                           context: context,
                           builder: (BuildContext context) {
-                            return popupItens('Isolamento', 'isolamento');
+                            return popupItens(
+                                'Isolamento', 'isolamentoDomiciliar');
                           },
                         );
                       },
