@@ -39,15 +39,16 @@ class ValoresBoletim extends ChangeNotifier {
   int recuperados_ = 0;
   int obitos_ = 0;
 
-  void setValues(
-      {DateTime? data,
-      String? dataString,
-      int? confirmados,
-      int? isolamentoDomiciliar,
-      int? aguardandoResultados,
-      int? internados,
-      int? recuperados,
-      int? obitos}) {
+  void setValues({
+    DateTime? data,
+    String? dataString,
+    int? confirmados,
+    int? isolamentoDomiciliar,
+    int? aguardandoResultados,
+    int? internados,
+    int? recuperados,
+    int? obitos,
+  }) {
     if (confirmados != null) {
       confirmados_ = confirmados;
     }
@@ -94,6 +95,7 @@ class Boletim extends StatelessWidget {
 
     popupItens(String texto, String valor) {
       TextEditingController cont = TextEditingController();
+
       return BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
         child: AlertDialog(
@@ -101,10 +103,12 @@ class Boletim extends StatelessWidget {
           title: Center(child: Text(texto)),
           content: TextFormField(
             decoration: const InputDecoration(
-                filled: true,
-                fillColor: Color.fromARGB(100, 255, 255, 255),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(15)))),
+              filled: true,
+              fillColor: Color.fromARGB(100, 255, 255, 255),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(15)),
+              ),
+            ),
             autofocus: true,
             controller: cont,
             keyboardType: TextInputType.number,
@@ -121,57 +125,58 @@ class Boletim extends StatelessWidget {
           actions: [
             Center(
               child: ElevatedButton(
-                  onPressed: () {
-                    if (cont.text != '') {
-                      valoresBoletimMap[valor] = int.parse(cont.text);
-                      switch (valor) {
-                        case 'confirmados':
-                          Provider.of<ValoresBoletim>(context, listen: false)
-                              .setValues(
-                            confirmados: int.parse(cont.text),
-                          );
-                          break;
-                        case 'isolamentoDomiciliar':
-                          Provider.of<ValoresBoletim>(context, listen: false)
-                              .setValues(
-                            isolamentoDomiciliar: int.parse(cont.text),
-                          );
-                          break;
+                onPressed: () {
+                  if (cont.text != '') {
+                    valoresBoletimMap[valor] = int.parse(cont.text);
+                    switch (valor) {
+                      case 'confirmados':
+                        Provider.of<ValoresBoletim>(context, listen: false)
+                            .setValues(
+                          confirmados: int.parse(cont.text),
+                        );
+                        break;
+                      case 'isolamentoDomiciliar':
+                        Provider.of<ValoresBoletim>(context, listen: false)
+                            .setValues(
+                          isolamentoDomiciliar: int.parse(cont.text),
+                        );
+                        break;
 
-                        case 'aguardandoResultado':
-                          Provider.of<ValoresBoletim>(context, listen: false)
-                              .setValues(
-                            aguardandoResultados: int.parse(cont.text),
-                          );
-                          break;
+                      case 'aguardandoResultado':
+                        Provider.of<ValoresBoletim>(context, listen: false)
+                            .setValues(
+                          aguardandoResultados: int.parse(cont.text),
+                        );
+                        break;
 
-                        case 'internados':
-                          Provider.of<ValoresBoletim>(context, listen: false)
-                              .setValues(
-                            internados: int.parse(cont.text),
-                          );
-                          break;
+                      case 'internados':
+                        Provider.of<ValoresBoletim>(context, listen: false)
+                            .setValues(
+                          internados: int.parse(cont.text),
+                        );
+                        break;
 
-                        case 'recuperados':
-                          Provider.of<ValoresBoletim>(context, listen: false)
-                              .setValues(
-                            recuperados: int.parse(cont.text),
-                          );
-                          break;
+                      case 'recuperados':
+                        Provider.of<ValoresBoletim>(context, listen: false)
+                            .setValues(
+                          recuperados: int.parse(cont.text),
+                        );
+                        break;
 
-                        case 'obitos':
-                          Provider.of<ValoresBoletim>(context, listen: false)
-                              .setValues(
-                            obitos: int.parse(cont.text),
-                          );
-                          break;
-                      }
+                      case 'obitos':
+                        Provider.of<ValoresBoletim>(context, listen: false)
+                            .setValues(
+                          obitos: int.parse(cont.text),
+                        );
+                        break;
                     }
+                  }
 
-                    Navigator.pop(context);
-                  },
-                  child: const Text('OK')),
-            )
+                  Navigator.pop(context);
+                },
+                child: const Text('OK'),
+              ),
+            ),
           ],
         ),
       );
@@ -194,10 +199,12 @@ class Boletim extends StatelessWidget {
                   ),
                   Center(
                     child: Align(
-                        alignment: const Alignment(0, .72),
-                        child: InkWell(onTap: () async {
+                      alignment: const Alignment(0, .72),
+                      child: InkWell(
+                        onTap: () {
                           _selectDate(context);
-                        }, child: Consumer<ValoresBoletim>(
+                        },
+                        child: Consumer<ValoresBoletim>(
                           builder: (context, value, child) {
                             return Text(
                               value.dataString_,
@@ -210,18 +217,22 @@ class Boletim extends StatelessWidget {
                               ),
                             );
                           },
-                        ))),
+                        ),
+                      ),
+                    ),
                   ),
                   // Casos Confirmados
                   Align(
                     alignment: const Alignment(0, -.5),
                     child: InkWell(
-                      onTap: () async {
-                        await showDialog(
+                      onTap: () {
+                        showDialog(
                           context: context,
                           builder: (BuildContext context) {
                             return popupItens(
-                                'Casos Confirmados', 'confirmados');
+                              'Casos Confirmados',
+                              'confirmados',
+                            );
                           },
                         );
                       },
@@ -231,8 +242,10 @@ class Boletim extends StatelessWidget {
                         height: constraints.maxHeight / 13,
                         child: Consumer<ValoresBoletim>(
                           builder: (context, value, child) {
-                            return texto(value.confirmados_.toString(),
-                                constraints.maxHeight / 200);
+                            return texto(
+                              value.confirmados_.toString(),
+                              constraints.maxHeight / 200,
+                            );
                           },
                         ),
                       ),
@@ -242,12 +255,14 @@ class Boletim extends StatelessWidget {
                   Align(
                     alignment: Alignment(widgetx, widgety - .244),
                     child: InkWell(
-                      onTap: () async {
-                        await showDialog(
+                      onTap: () {
+                        showDialog(
                           context: context,
                           builder: (BuildContext context) {
                             return popupItens(
-                                'Isolamento', 'isolamentoDomiciliar');
+                              'Isolamento',
+                              'isolamentoDomiciliar',
+                            );
                           },
                         );
                       },
@@ -277,12 +292,14 @@ class Boletim extends StatelessWidget {
                   Align(
                     alignment: Alignment(widgetx, widgety - .046),
                     child: InkWell(
-                      onTap: () async {
-                        await showDialog(
+                      onTap: () {
+                        showDialog(
                           context: context,
                           builder: (BuildContext context) {
                             return popupItens(
-                                'Aguardando Resultados', 'aguardandoResultado');
+                              'Aguardando Resultados',
+                              'aguardandoResultado',
+                            );
                           },
                         );
                       },
@@ -312,8 +329,8 @@ class Boletim extends StatelessWidget {
                   Align(
                     alignment: Alignment(widgetx, widgety + .155),
                     child: InkWell(
-                      onTap: () async {
-                        await showDialog(
+                      onTap: () {
+                        showDialog(
                           context: context,
                           builder: (BuildContext context) {
                             return popupItens('Internados', 'internados');
@@ -346,12 +363,14 @@ class Boletim extends StatelessWidget {
                   Align(
                     alignment: Alignment(widgetx, widgety + 0.354),
                     child: InkWell(
-                      onTap: () async {
-                        await showDialog(
+                      onTap: () {
+                        showDialog(
                           context: context,
                           builder: (BuildContext context) {
-                            return popupItens('Recuperados / Fim de Isolamento',
-                                'recuperados');
+                            return popupItens(
+                              'Recuperados / Fim de Isolamento',
+                              'recuperados',
+                            );
                           },
                         );
                       },
@@ -381,8 +400,8 @@ class Boletim extends StatelessWidget {
                   Align(
                     alignment: Alignment(widgetx, widgety + 0.554),
                     child: InkWell(
-                      onTap: () async {
-                        await showDialog(
+                      onTap: () {
+                        showDialog(
                           context: context,
                           builder: (BuildContext context) {
                             return popupItens('Obitos', 'obitos');
@@ -423,12 +442,12 @@ class Boletim extends StatelessWidget {
 
 _selectDate(BuildContext context) {
   showDatePicker(
-          //locale: const Locale('pt', 'BR'),
-          context: context,
-          initialDate: selectedDate,
-          firstDate: DateTime(2012, 8),
-          lastDate: DateTime(2101))
-      .then((picked) {
+    //locale: const Locale('pt', 'BR'),
+    context: context,
+    initialDate: selectedDate,
+    firstDate: DateTime(2012, 8),
+    lastDate: DateTime(2101),
+  ).then((picked) {
     if (picked != null) {
       dataBoletim =
           '${picked.day.toString().padLeft(2, '0')} DE ${DateFormat('MMMM', 'pt-BR').format(picked)} de ${picked.year}'

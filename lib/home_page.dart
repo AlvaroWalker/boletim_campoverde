@@ -30,6 +30,7 @@ String valorItemBoletim(dynamic result, Rect bounds) {
     for (int j = 0; j < wordCollection.length; j++) {
       if (pdfTextBounds.overlaps(wordCollection[j].bounds)) {
         pdfText = wordCollection[j].text;
+
         return pdfText;
       }
     }
@@ -58,26 +59,27 @@ Future<List<int>> _readDocumentData(var name) async {
 class _HomePageState extends State<HomePage> {
   void _showResult(String text) {
     showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('BOLETIM'),
-            content: Scrollbar(
-              child: SingleChildScrollView(
-                child: Text(text),
-              ),
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('BOLETIM'),
+          content: Scrollbar(
+            child: SingleChildScrollView(
+              child: Text(text),
             ),
-            actions: [
-              ElevatedButton(
-                child: const Text('Fechar'),
-                onPressed: () {
-                  setBoletimValues();
-                  Navigator.of(context).pop();
-                },
-              )
-            ],
-          );
-        });
+          ),
+          actions: [
+            ElevatedButton(
+              child: const Text('Fechar'),
+              onPressed: () {
+                setBoletimValues();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future _pickFile() async {
@@ -164,7 +166,8 @@ class _HomePageState extends State<HomePage> {
 
 //Display the text.
     _showResult(
-        'Confirmados: $pdfConf\nAguardando Resultado: $pdfAguardando\nEm Isolamento: $pdfIsolados\nRecuperados: $pdfRecuperados\nInternados: $pdfInternados\nObitos: $pdfObitos');
+      'Confirmados: $pdfConf\nAguardando Resultado: $pdfAguardando\nEm Isolamento: $pdfIsolados\nRecuperados: $pdfRecuperados\nInternados: $pdfInternados\nObitos: $pdfObitos',
+    );
 
     valoresBoletim[0] = int.tryParse(pdfConf)!;
     valoresBoletim[1] = int.tryParse(pdfIsolados)!;
@@ -209,7 +212,7 @@ class _HomePageState extends State<HomePage> {
                           color: Color.fromARGB(51, 0, 0, 0),
                           offset: Offset(0, 0),
                           spreadRadius: 0,
-                        )
+                        ),
                       ],
                       borderRadius: BorderRadius.circular(20),
                       shape: BoxShape.rectangle,
@@ -220,7 +223,9 @@ class _HomePageState extends State<HomePage> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(20),
                       child: RepaintBoundary(
-                          key: boletimKey, child: const Boletim()),
+                        key: boletimKey,
+                        child: const Boletim(),
+                      ),
                     ),
                   ),
                 ),
@@ -273,7 +278,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                       ),
-                      onPressed: () async {
+                      onPressed: () {
                         double w =
                             1080 / boletimKey.currentContext!.size!.width;
                         double pixelratio =

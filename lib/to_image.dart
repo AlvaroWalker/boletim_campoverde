@@ -2,10 +2,11 @@ import 'dart:ui';
 
 import 'package:download/download.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
 
 import 'boletim.dart';
 
-Future<void> captureAndSaveImage(dynamic key, double pixelRatioFinal) async {
+Future<void> captureAndSaveImage(GlobalKey key, double pixelRatioFinal) async {
   final boundary =
       key.currentContext?.findRenderObject() as RenderRepaintBoundary?;
   final image = await boundary?.toImage(pixelRatio: pixelRatioFinal);
