@@ -84,7 +84,7 @@ class Boletim extends StatelessWidget {
       return Text(
         text,
         textAlign: TextAlign.center,
-        textScaleFactor: size,
+        textScaler: TextScaler.linear(size),
         style: const TextStyle(
           fontFamily: 'Nexa',
           color: Color.fromARGB(255, 20, 20, 20),
@@ -209,7 +209,8 @@ class Boletim extends StatelessWidget {
                             return Text(
                               value.dataString_,
                               textAlign: TextAlign.center,
-                              textScaleFactor: constraints.maxWidth / 500,
+                              textScaler:
+                                  TextScaler.linear(constraints.maxWidth / 500),
                               style: const TextStyle(
                                 fontFamily: 'Nexa',
                                 color: Color.fromARGB(255, 20, 20, 20),
@@ -275,7 +276,8 @@ class Boletim extends StatelessWidget {
                             return Text(
                               value.isolamentoDomiciliar_.toString(),
                               textAlign: TextAlign.center,
-                              textScaleFactor: constraints.maxHeight / 350,
+                              textScaler: TextScaler.linear(
+                                  constraints.maxHeight / 350),
                               style: const TextStyle(
                                 height: 1.8,
                                 fontFamily: 'Nexa',
@@ -312,7 +314,8 @@ class Boletim extends StatelessWidget {
                             return Text(
                               value.aguardandoResultado_.toString(),
                               textAlign: TextAlign.center,
-                              textScaleFactor: constraints.maxHeight / 350,
+                              textScaler: TextScaler.linear(
+                                  constraints.maxHeight / 350),
                               style: const TextStyle(
                                 height: 1.8,
                                 fontFamily: 'Nexa',
@@ -346,7 +349,8 @@ class Boletim extends StatelessWidget {
                             return Text(
                               value.internados_.toString(),
                               textAlign: TextAlign.center,
-                              textScaleFactor: constraints.maxHeight / 350,
+                              textScaler: TextScaler.linear(
+                                  constraints.maxHeight / 350),
                               style: const TextStyle(
                                 height: 1.8,
                                 fontFamily: 'Nexa',
@@ -383,7 +387,8 @@ class Boletim extends StatelessWidget {
                             return Text(
                               value.recuperados_.toString(),
                               textAlign: TextAlign.center,
-                              textScaleFactor: constraints.maxHeight / 350,
+                              textScaler: TextScaler.linear(
+                                  constraints.maxHeight / 350),
                               style: const TextStyle(
                                 height: 1.8,
                                 fontFamily: 'Nexa',
@@ -417,7 +422,8 @@ class Boletim extends StatelessWidget {
                             return Text(
                               value.obitos_.toString(),
                               textAlign: TextAlign.center,
-                              textScaleFactor: constraints.maxHeight / 350,
+                              textScaler: TextScaler.linear(
+                                  constraints.maxHeight / 350),
                               style: const TextStyle(
                                 height: 1.8,
                                 fontFamily: 'Nexa',

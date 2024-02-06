@@ -282,7 +282,7 @@ class _HomePageState extends State<HomePage> {
                         double w =
                             1080 / boletimKey.currentContext!.size!.width;
                         double pixelratio =
-                            MediaQuery.of(context).devicePixelRatio;
+                            MediaQuery.devicePixelRatioOf(context);
                         double pixelRatioFinal = w * pixelratio;
                         captureAndSaveImage(boletimKey, pixelRatioFinal);
                       },
