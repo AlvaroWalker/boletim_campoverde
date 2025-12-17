@@ -1,62 +1,50 @@
 import 'package:boletim_campoverde/to_image.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
-
 import 'boletim.dart';
 
-double widgetx = .45;
-double widgety = -.013;
-
+double widgetX = .45;
+double widgetY = -.013;
 double widgetHeight = 50;
 double widgetWidth = 50;
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
-String valorItemBoletim(dynamic result, Rect bounds) {
-  Rect pdfTextBounds = bounds;
+class _HomePageState extends State<HomePage> {
+  final boletimKey = GlobalKey();
+  String textoOcr = '';
+  Uint8List? imgBoletim;
+  List<int> valoresBoletim = List.filled(6, 0);
+  String localidade = '';
+  int txt1 = 0, txt2 = 0, txt3 = 0, txt4 = 0, txt5 = 0;
+  DateTime selectedDate = DateTime.now();
 
-  String pdfText = '';
-
-  for (int i = 0; i < result.length; i++) {
-    List<TextWord> wordCollection = result[i].wordCollection;
-    for (int j = 0; j < wordCollection.length; j++) {
-      if (pdfTextBounds.overlaps(wordCollection[j].bounds)) {
-        pdfText = wordCollection[j].text;
-
-        return pdfText;
-      }
-    }
-    if (pdfText != '') {
-      break;
-    }
+  Future<List<int>> _readDocumentData(var name) async {
+    //final ByteData data = await rootBundle.load(name);
+    //return data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+    return name;
   }
 
-  return pdfText;
-}
+  Future<Uint8List?> _pickFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      allowedExtensions: ['pdf'],
+      type: FileType.custom,
+    );
 
-final boletimKey = GlobalKey();
+    if (result != null) {
+      return result.files.single.bytes;
+    }
+    return null;
+  }
 
-Size size = const Size(0, 0);
-Offset position = const Offset(0, 0);
-DateTime selectedDate = DateTime.now();
-
-Future<List<int>> _readDocumentData(var name) async {
-  //final ByteData data = await rootBundle.load(name);
-
-  //return data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-
-  return name;
-}
-
-class _HomePageState extends State<HomePage> {
   void _showResult(String text) {
     showDialog(
       context: context,
@@ -82,99 +70,42 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Future _pickFile() async {
-    FilePickerResult? result = await FilePicker.platform
-        .pickFiles(allowedExtensions: ['pdf'], type: FileType.custom);
-
-    if (result != null) {
-      //File file = File(result.files.single.path!);
-
-      return result.files.single.bytes;
-    } else {
-      // User canceled the picker
-    }
-  }
-
-  String textoOcr = '';
-  Uint8List? imgBoletim;
-  List<int> valoresBoletim = [
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-  ];
-
-  String localidade = '';
-
-  int txt1 = 0, txt2 = 0, txt3 = 0, txt4 = 0, txt5 = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Center(
-          child: Text('Boletim COVID19'),
-        ),
-      ),
-      body: telaTeste(),
-    );
-  }
-
   Future<void> lerPDF() async {
     var local = await _pickFile();
-    //Load an existing PDF document.
+    if (local == null) return;
+
     PdfDocument document =
         PdfDocument(inputBytes: await _readDocumentData(local));
-
-//Create a new instance of the PdfTextExtractor.
     PdfTextExtractor extractor = PdfTextExtractor(document);
-
-//Extract all the text from a particular page.
     List<TextLine> result = extractor.extractTextLines(startPageIndex: 0);
-
-//Predefined bound.
 
     String pdfConf =
         valorItemBoletim(result, const Rect.fromLTWH(56, 278, 129, 30));
-
-    //
-
     String pdfAguardando =
         valorItemBoletim(result, const Rect.fromLTWH(376, 276, 112, 30));
-
-    //
-
     String pdfIsolados =
         valorItemBoletim(result, const Rect.fromLTWH(166, 360, 77, 30));
-
-    //
-
     String pdfRecuperados =
         valorItemBoletim(result, const Rect.fromLTWH(243, 240, 114, 30));
-
-    //
-
     String pdfInternados =
         valorItemBoletim(result, const Rect.fromLTWH(280, 360, 77, 30));
-
-    //
-
     String pdfObitos =
         valorItemBoletim(result, const Rect.fromLTWH(395, 360, 75, 30));
 
-//Display the text.
     _showResult(
       'Confirmados: $pdfConf\nAguardando Resultado: $pdfAguardando\nEm Isolamento: $pdfIsolados\nRecuperados: $pdfRecuperados\nInternados: $pdfInternados\nObitos: $pdfObitos',
     );
 
-    valoresBoletim[0] = int.tryParse(pdfConf)!;
-    valoresBoletim[1] = int.tryParse(pdfIsolados)!;
-    valoresBoletim[2] = int.tryParse(pdfAguardando)!;
-    valoresBoletim[3] = int.tryParse(pdfInternados)!;
-    valoresBoletim[4] = int.tryParse(pdfRecuperados)!;
-    valoresBoletim[5] = int.tryParse(pdfObitos)!;
+    setState(() {
+      valoresBoletim = [
+        int.tryParse(pdfConf) ?? 0,
+        int.tryParse(pdfIsolados) ?? 0,
+        int.tryParse(pdfAguardando) ?? 0,
+        int.tryParse(pdfInternados) ?? 0,
+        int.tryParse(pdfRecuperados) ?? 0,
+        int.tryParse(pdfObitos) ?? 0,
+      ];
+    });
   }
 
   void setBoletimValues() {
@@ -188,6 +119,17 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  String valorItemBoletim(List<TextLine> result, Rect bounds) {
+    for (TextLine line in result) {
+      for (TextWord word in line.wordCollection) {
+        if (bounds.overlaps(word.bounds)) {
+          return word.text;
+        }
+      }
+    }
+    return '';
+  }
+
   Widget telaTeste() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -197,9 +139,7 @@ class _HomePageState extends State<HomePage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              const Spacer(
-                flex: 1,
-              ),
+              const Spacer(flex: 1),
               Flexible(
                 flex: 8,
                 child: AspectRatio(
@@ -215,10 +155,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ],
                       borderRadius: BorderRadius.circular(20),
-                      shape: BoxShape.rectangle,
-                      border: Border.all(
-                        color: const Color(0xFFDDDDDD),
-                      ),
+                      border: Border.all(color: const Color(0xFFDDDDDD)),
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(20),
@@ -230,80 +167,75 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-              const Spacer(
-                flex: 1,
-              ),
+              const Spacer(flex: 1),
             ],
           ),
         ),
         Flexible(
           flex: 1,
-          child: Row(
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      style: ButtonStyle(
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                        ),
-                      ),
-                      onPressed: lerPDF,
-                      child: const SizedBox(
-                        height: 70,
-                        width: 170,
-                        child: Center(
-                          child: Text(
-                            'CARREGAR PDF\nCOM DADOS',
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
+              ElevatedButton(
+                style: ButtonStyle(
+                  shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                    const SizedBox(
-                      height: 10,
+                  ),
+                ),
+                onPressed: lerPDF,
+                child: const SizedBox(
+                  height: 70,
+                  width: 170,
+                  child: Center(
+                    child: Text(
+                      'CARREGAR PDF\nCOM DADOS',
+                      textAlign: TextAlign.center,
                     ),
-                    ElevatedButton(
-                      style: ButtonStyle(
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                        ),
-                      ),
-                      onPressed: () {
-                        double w =
-                            1080 / boletimKey.currentContext!.size!.width;
-                        double pixelratio =
-                            MediaQuery.devicePixelRatioOf(context);
-                        double pixelRatioFinal = w * pixelratio;
-                        captureAndSaveImage(boletimKey, pixelRatioFinal);
-                      },
-                      child: const SizedBox(
-                        height: 70,
-                        width: 170,
-                        child: Center(
-                          child: Text(
-                            'BAIXAR\nBOLETIM',
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                style: ButtonStyle(
+                  shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                  ],
+                  ),
+                ),
+                onPressed: () {
+                  double w = 1080 / boletimKey.currentContext!.size!.width;
+                  double pixelRatio = MediaQuery.of(context).devicePixelRatio;
+                  double pixelRatioFinal = w * pixelRatio;
+                  captureAndSaveImage(boletimKey, pixelRatioFinal);
+                },
+                child: const SizedBox(
+                  height: 70,
+                  width: 170,
+                  child: Center(
+                    child: Text(
+                      'BAIXAR\nBOLETIM',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                 ),
               ),
             ],
           ),
         ),
       ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Center(child: Text('Boletim COVID19')),
+      ),
+      body: telaTeste(),
     );
   }
 }

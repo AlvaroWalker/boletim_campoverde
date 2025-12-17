@@ -1,14 +1,11 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 double widgetx = .45;
 double widgety = -.013;
-
 String dataBoletim = 'CLIQUE PARA ALTERAR A DATA';
-
 DateTime selectedDate = DateTime.now();
 
 Map<String, int> valoresBoletimMap = {
@@ -20,18 +17,9 @@ Map<String, int> valoresBoletimMap = {
   'obitos': 0,
 };
 
-List<int> valoresBoletim = [
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-];
-
 class ValoresBoletim extends ChangeNotifier {
   DateTime dataBoletim_ = DateTime.now();
-  String dataString_ = 'CLIQUE PADA ALTERAR A DATA';
+  String dataString_ = 'CLIQUE PARA ALTERAR A DATA';
   int confirmados_ = 0;
   int isolamentoDomiciliar_ = 0;
   int aguardandoResultado_ = 0;
@@ -49,139 +37,27 @@ class ValoresBoletim extends ChangeNotifier {
     int? recuperados,
     int? obitos,
   }) {
-    if (confirmados != null) {
-      confirmados_ = confirmados;
-    }
+    if (data != null) dataBoletim_ = data;
+    if (dataString != null) dataString_ = dataString;
+    if (confirmados != null) confirmados_ = confirmados;
     if (isolamentoDomiciliar != null) {
       isolamentoDomiciliar_ = isolamentoDomiciliar;
     }
     if (aguardandoResultados != null) {
       aguardandoResultado_ = aguardandoResultados;
     }
-    if (internados != null) {
-      internados_ = internados;
-    }
-    if (recuperados != null) {
-      recuperados_ = recuperados;
-    }
-    if (obitos != null) {
-      obitos_ = obitos;
-    }
-    if (dataString != null) {
-      dataString_ = dataString;
-    }
-
+    if (internados != null) internados_ = internados;
+    if (recuperados != null) recuperados_ = recuperados;
+    if (obitos != null) obitos_ = obitos;
     notifyListeners();
   }
 }
 
 class Boletim extends StatelessWidget {
-  const Boletim({Key? key}) : super(key: key);
+  const Boletim({super.key});
 
   @override
   Widget build(BuildContext context) {
-    Widget texto(String text, double size) {
-      return Text(
-        text,
-        textAlign: TextAlign.center,
-        textScaler: TextScaler.linear(size),
-        style: const TextStyle(
-          fontFamily: 'Nexa',
-          color: Color.fromARGB(255, 20, 20, 20),
-          fontWeight: FontWeight.w900,
-        ),
-      );
-    }
-
-    popupItens(String texto, String valor) {
-      TextEditingController cont = TextEditingController();
-
-      return BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
-        child: AlertDialog(
-          backgroundColor: const Color.fromARGB(150, 255, 255, 255),
-          title: Center(child: Text(texto)),
-          content: TextFormField(
-            decoration: const InputDecoration(
-              filled: true,
-              fillColor: Color.fromARGB(100, 255, 255, 255),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(15)),
-              ),
-            ),
-            autofocus: true,
-            controller: cont,
-            keyboardType: TextInputType.number,
-            onChanged: (v) {
-              print(v);
-            },
-            onFieldSubmitted: (value) {
-              if (cont.text != '') {
-                valoresBoletimMap[valor] = int.parse(cont.text);
-              }
-              Navigator.pop(context);
-            },
-          ),
-          actions: [
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  if (cont.text != '') {
-                    valoresBoletimMap[valor] = int.parse(cont.text);
-                    switch (valor) {
-                      case 'confirmados':
-                        Provider.of<ValoresBoletim>(context, listen: false)
-                            .setValues(
-                          confirmados: int.parse(cont.text),
-                        );
-                        break;
-                      case 'isolamentoDomiciliar':
-                        Provider.of<ValoresBoletim>(context, listen: false)
-                            .setValues(
-                          isolamentoDomiciliar: int.parse(cont.text),
-                        );
-                        break;
-
-                      case 'aguardandoResultado':
-                        Provider.of<ValoresBoletim>(context, listen: false)
-                            .setValues(
-                          aguardandoResultados: int.parse(cont.text),
-                        );
-                        break;
-
-                      case 'internados':
-                        Provider.of<ValoresBoletim>(context, listen: false)
-                            .setValues(
-                          internados: int.parse(cont.text),
-                        );
-                        break;
-
-                      case 'recuperados':
-                        Provider.of<ValoresBoletim>(context, listen: false)
-                            .setValues(
-                          recuperados: int.parse(cont.text),
-                        );
-                        break;
-
-                      case 'obitos':
-                        Provider.of<ValoresBoletim>(context, listen: false)
-                            .setValues(
-                          obitos: int.parse(cont.text),
-                        );
-                        break;
-                    }
-                  }
-
-                  Navigator.pop(context);
-                },
-                child: const Text('OK'),
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
     return LayoutBuilder(builder: (context, constraints) {
       return AspectRatio(
         aspectRatio: 1 / 1,
@@ -201,9 +77,7 @@ class Boletim extends StatelessWidget {
                     child: Align(
                       alignment: const Alignment(0, .72),
                       child: InkWell(
-                        onTap: () {
-                          _selectDate(context);
-                        },
+                        onTap: () => _selectDate(context),
                         child: Consumer<ValoresBoletim>(
                           builder: (context, value, child) {
                             return Text(
@@ -222,220 +96,7 @@ class Boletim extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // Casos Confirmados
-                  Align(
-                    alignment: const Alignment(0, -.5),
-                    child: InkWell(
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return popupItens(
-                              'Casos Confirmados',
-                              'confirmados',
-                            );
-                          },
-                        );
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        width: constraints.maxHeight / 2.8,
-                        height: constraints.maxHeight / 13,
-                        child: Consumer<ValoresBoletim>(
-                          builder: (context, value, child) {
-                            return texto(
-                              value.confirmados_.toString(),
-                              constraints.maxHeight / 200,
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                  //
-                  Align(
-                    alignment: Alignment(widgetx, widgety - .244),
-                    child: InkWell(
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return popupItens(
-                              'Isolamento',
-                              'isolamentoDomiciliar',
-                            );
-                          },
-                        );
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        width: constraints.maxHeight / 5.5,
-                        height: constraints.maxHeight / 15,
-                        child: Consumer<ValoresBoletim>(
-                          builder: (context, value, child) {
-                            return Text(
-                              value.isolamentoDomiciliar_.toString(),
-                              textAlign: TextAlign.center,
-                              textScaler: TextScaler.linear(
-                                  constraints.maxHeight / 350),
-                              style: const TextStyle(
-                                height: 1.8,
-                                fontFamily: 'Nexa',
-                                color: Colors.white,
-                                fontWeight: FontWeight.w900,
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                  //
-                  Align(
-                    alignment: Alignment(widgetx, widgety - .046),
-                    child: InkWell(
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return popupItens(
-                              'Aguardando Resultados',
-                              'aguardandoResultado',
-                            );
-                          },
-                        );
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        width: constraints.maxHeight / 5.5,
-                        height: constraints.maxHeight / 15,
-                        child: Consumer<ValoresBoletim>(
-                          builder: (context, value, child) {
-                            return Text(
-                              value.aguardandoResultado_.toString(),
-                              textAlign: TextAlign.center,
-                              textScaler: TextScaler.linear(
-                                  constraints.maxHeight / 350),
-                              style: const TextStyle(
-                                height: 1.8,
-                                fontFamily: 'Nexa',
-                                color: Colors.white,
-                                fontWeight: FontWeight.w900,
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                  //
-                  Align(
-                    alignment: Alignment(widgetx, widgety + .155),
-                    child: InkWell(
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return popupItens('Internados', 'internados');
-                          },
-                        );
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        width: constraints.maxHeight / 5.5,
-                        height: constraints.maxHeight / 15,
-                        child: Consumer<ValoresBoletim>(
-                          builder: (context, value, child) {
-                            return Text(
-                              value.internados_.toString(),
-                              textAlign: TextAlign.center,
-                              textScaler: TextScaler.linear(
-                                  constraints.maxHeight / 350),
-                              style: const TextStyle(
-                                height: 1.8,
-                                fontFamily: 'Nexa',
-                                color: Colors.white,
-                                fontWeight: FontWeight.w900,
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                  //
-                  Align(
-                    alignment: Alignment(widgetx, widgety + 0.354),
-                    child: InkWell(
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return popupItens(
-                              'Recuperados / Fim de Isolamento',
-                              'recuperados',
-                            );
-                          },
-                        );
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        width: constraints.maxHeight / 5.5,
-                        height: constraints.maxHeight / 15,
-                        child: Consumer<ValoresBoletim>(
-                          builder: (context, value, child) {
-                            return Text(
-                              value.recuperados_.toString(),
-                              textAlign: TextAlign.center,
-                              textScaler: TextScaler.linear(
-                                  constraints.maxHeight / 350),
-                              style: const TextStyle(
-                                height: 1.8,
-                                fontFamily: 'Nexa',
-                                color: Colors.white,
-                                fontWeight: FontWeight.w900,
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                  //
-                  Align(
-                    alignment: Alignment(widgetx, widgety + 0.554),
-                    child: InkWell(
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return popupItens('Obitos', 'obitos');
-                          },
-                        );
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        width: constraints.maxHeight / 5.5,
-                        height: constraints.maxHeight / 15,
-                        child: Consumer<ValoresBoletim>(
-                          builder: (context, value, child) {
-                            return Text(
-                              value.obitos_.toString(),
-                              textAlign: TextAlign.center,
-                              textScaler: TextScaler.linear(
-                                  constraints.maxHeight / 350),
-                              style: const TextStyle(
-                                height: 1.8,
-                                fontFamily: 'Nexa',
-                                color: Colors.white,
-                                fontWeight: FontWeight.w900,
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
+                  for (var item in _boletimItems(context, constraints)) item,
                 ],
               ),
             ),
@@ -444,25 +105,141 @@ class Boletim extends StatelessWidget {
       );
     });
   }
-}
 
-_selectDate(BuildContext context) {
-  showDatePicker(
-    //locale: const Locale('pt', 'BR'),
-    context: context,
-    initialDate: selectedDate,
-    firstDate: DateTime(2012, 8),
-    lastDate: DateTime(2101),
-  ).then((picked) {
-    if (picked != null) {
-      dataBoletim =
-          '${picked.day.toString().padLeft(2, '0')} DE ${DateFormat('MMMM', 'pt-BR').format(picked)} de ${picked.year}'
-              .toUpperCase();
+  List<Widget> _boletimItems(BuildContext context, BoxConstraints constraints) {
+    return [
+      _buildBoletimItem(context, 'confirmados', 'Casos Confirmados',
+          const Alignment(0, -.53), constraints, true),
+      _buildBoletimItem(context, 'isolamentoDomiciliar', 'Isolamento',
+          Alignment(widgetx, widgety - .244), constraints),
+      _buildBoletimItem(context, 'aguardandoResultado', 'Aguardando Resultados',
+          Alignment(widgetx, widgety - .046), constraints),
+      _buildBoletimItem(context, 'internados', 'Internados',
+          Alignment(widgetx, widgety + .155), constraints),
+      _buildBoletimItem(
+          context,
+          'recuperados',
+          'Recuperados / Fim de Isolamento',
+          Alignment(widgetx, widgety + .354),
+          constraints),
+      _buildBoletimItem(context, 'obitos', 'Óbitos',
+          Alignment(widgetx, widgety + .554), constraints),
+    ];
+  }
 
-      print(dataBoletim);
+  Widget _buildBoletimItem(BuildContext context, String key, String label,
+      Alignment alignment, BoxConstraints constraints,
+      [bool isConfirmados = false]) {
+    return Align(
+      alignment: alignment,
+      child: InkWell(
+        onTap: () => _showPopup(context, label, key),
+        child: Container(
+          alignment: Alignment.center,
+          width: constraints.maxHeight / (isConfirmados ? 2.8 : 5.5),
+          height: constraints.maxHeight / (isConfirmados ? 13 : 15),
+          child: Consumer<ValoresBoletim>(
+            builder: (context, value, child) {
+              return Text(
+                valoresBoletimMap[key].toString(),
+                textAlign: TextAlign.center,
+                textScaler: TextScaler.linear(
+                    constraints.maxHeight / (isConfirmados ? 200 : 350)),
+                style: TextStyle(
+                  height: 1.8,
+                  fontFamily: 'Nexa',
+                  color: key == 'confirmados'
+                      ? const Color.fromARGB(255, 20, 20, 20)
+                      : Colors.white,
+                  fontWeight: FontWeight.w900,
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
 
-      Provider.of<ValoresBoletim>(context, listen: false)
-          .setValues(dataString: dataBoletim);
-    }
-  });
+  void _showPopup(BuildContext context, String label, String key) {
+    TextEditingController cont = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+          child: AlertDialog(
+            backgroundColor: const Color.fromARGB(150, 255, 255, 255),
+            title: Center(child: Text(label)),
+            content: TextFormField(
+              decoration: const InputDecoration(
+                filled: true,
+                fillColor: Color.fromARGB(100, 255, 255, 255),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(15)),
+                ),
+              ),
+              autofocus: true,
+              controller: cont,
+              keyboardType: TextInputType.number,
+              onChanged: (v) => print(v),
+              onFieldSubmitted: (value) {
+                if (cont.text.isNotEmpty) {
+                  valoresBoletimMap[key] = int.parse(cont.text);
+                }
+                Navigator.pop(context);
+              },
+            ),
+            actions: [
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (cont.text.isNotEmpty) {
+                      valoresBoletimMap[key] = int.parse(cont.text);
+                      Provider.of<ValoresBoletim>(context, listen: false)
+                          .setValues(
+                        dataString: dataBoletim,
+                        confirmados:
+                            key == 'confirmados' ? int.parse(cont.text) : null,
+                        isolamentoDomiciliar: key == 'isolamentoDomiciliar'
+                            ? int.parse(cont.text)
+                            : null,
+                        aguardandoResultados: key == 'aguardandoResultado'
+                            ? int.parse(cont.text)
+                            : null,
+                        internados:
+                            key == 'internados' ? int.parse(cont.text) : null,
+                        recuperados:
+                            key == 'recuperados' ? int.parse(cont.text) : null,
+                        obitos: key == 'obitos' ? int.parse(cont.text) : null,
+                      );
+                    }
+                    Navigator.pop(context);
+                  },
+                  child: const Text('OK'),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _selectDate(BuildContext context) {
+    showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(2012, 8),
+      lastDate: DateTime(2101),
+    ).then((picked) {
+      if (picked != null) {
+        dataBoletim =
+            '${picked.day.toString().padLeft(2, '0')} DE ${DateFormat('MMMM', 'pt-BR').format(picked)} de ${picked.year}'
+                .toUpperCase();
+        Provider.of<ValoresBoletim>(context, listen: false)
+            .setValues(dataString: dataBoletim, data: picked);
+      }
+    });
+  }
 }
